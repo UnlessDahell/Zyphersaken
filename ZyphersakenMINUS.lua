@@ -63,7 +63,7 @@ local Slider = MainTab:CreateSlider({
 
 local CommunitySection = MainTab:CreateSection("Our Discord Community Server")
 
-local Button2 = MainTab:CreateButton({
+local Button = MainTab:CreateButton({
    Name = "Discord Link Click to Get Here!",
    Callback = function()
       setclipboard("https://discord.gg/wDj3ve2K")
