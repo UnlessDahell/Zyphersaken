@@ -49,7 +49,7 @@ local MainTab = Window:CreateTab("Main", 132272873219669)
 local MainSection = MainTab:CreateSection("Main")
 
 local Slider = MainTab:CreateSlider({
-    Name = "Camera FOV",
+    Name = "Camera FOV (Broken)",
     Range = {80, 120}, 
     Increment = 1, 
     Suffix = "°",
