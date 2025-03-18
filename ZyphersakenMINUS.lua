@@ -70,17 +70,19 @@ local Button = MainTab:CreateButton({
    end,
 })
 
-local VisionTab = Window:CreateTab("Vision")
-local Section = VisionTab:CreateSection("This Tab About Vision/Highlight")
+local VisionTab = Window:CreateTab("Vision", nil)
+local Section = Tab:CreateSection("This Page About Vision/ESP")
 
 local function createOutlineESP(model, outlineColor, fillColor)
-    local highlight = Instance.new("Highlight")
-    highlight.Parent = model
-    highlight.Adornee = model
-    highlight.FillTransparency = 0.75
-    highlight.FillColor = fillColor
-    highlight.OutlineColor = outlineColor
-    highlight.OutlineTransparency = 0
+    if model and model:IsA("Model") and not model:FindFirstChildOfClass("Highlight") then
+        local highlight = Instance.new("Highlight")
+        highlight.Parent = model
+        highlight.Adornee = model
+        highlight.FillTransparency = 0.75
+        highlight.FillColor = fillColor
+        highlight.OutlineColor = outlineColor
+        highlight.OutlineTransparency = 0
+    end
 end
 
 local function removeESPFromGroup(group)
@@ -97,29 +99,40 @@ local function removeESPFromGroup(group)
     end
 end
 
+local function removeAllESP()
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("Highlight") then
+            obj:Destroy()
+        end
+    end
+end
+
 local generatorEnabled = false
-local function toggleGeneratorESP(state)
-    generatorEnabled = state
+local function toggleGeneratorESP()
     if generatorEnabled then
+        removeESPFromGroup(workspace)
+        generatorEnabled = false
+    else
         local generatorsFolder = workspace:FindFirstChild("Map") and 
                                  workspace.Map:FindFirstChild("Ingame") and 
                                  workspace.Map.Ingame:FindFirstChild("Map")
         if generatorsFolder then
             for _, obj in pairs(generatorsFolder:GetChildren()) do
                 if obj:IsA("Model") and obj.Name == "Generator" then
-                    createOutlineESP(obj, Color3.new(1, 1, 0), Color3.new(1, 1, 0.5)) 
+                    createOutlineESP(obj, Color3.new(1, 1, 0), Color3.new(1, 1, 0.5))
                 end
             end
         end
-    else
-        removeESPFromGroup(workspace)
+        generatorEnabled = true
     end
 end
 
 local killersEnabled = false
-local function toggleKillersESP(state)
-    killersEnabled = state
+local function toggleKillersESP()
     if killersEnabled then
+        removeESPFromGroup(game.Workspace.Players:FindFirstChild("Killers"))
+        killersEnabled = false
+    else
         local killersGroup = game.Workspace.Players:FindFirstChild("Killers")
         if killersGroup then
             for _, obj in pairs(killersGroup:GetChildren()) do
@@ -129,52 +142,52 @@ local function toggleKillersESP(state)
                 end
             end
         end
-    else
-        removeESPFromGroup(game.Workspace.Players:FindFirstChild("Killers"))
+        killersEnabled = true
     end
 end
 
 local survivorsEnabled = false
-local function toggleSurvivorsESP(state)
-    survivorsEnabled = state
+local function toggleSurvivorsESP()
     if survivorsEnabled then
+        removeESPFromGroup(game.Workspace.Players:FindFirstChild("Survivors"))
+        survivorsEnabled = false
+    else
         local survivorsGroup = game.Workspace.Players:FindFirstChild("Survivors")
         if survivorsGroup then
             for _, obj in pairs(survivorsGroup:GetChildren()) do
                 local humanoid = obj:FindFirstChildOfClass("Humanoid")
                 if humanoid and obj:FindFirstChild("HumanoidRootPart") then
-                    createOutlineESP(obj, Color3.new(0, 1, 0), Color3.new(0.5, 1, 0.5)) 
+                    createOutlineESP(obj, Color3.new(0, 1, 0), Color3.new(0.5, 1, 0.5))
                 end
             end
         end
-    else
-        removeESPFromGroup(game.Workspace.Players:FindFirstChild("Survivors"))
+        survivorsEnabled = true
     end
 end
 
-local GeneratorToggle = VisionTab:CreateToggle({
+VisionTab:CreateToggle({
     Name = "Generator ESP",
     CurrentValue = false,
     Flag = "GeneratorESP",
-    Callback = function(Value)
-        toggleGeneratorESP(Value)
+    Callback = function()
+        toggleGeneratorESP()
     end
 })
 
-local KillersToggle = VisionTab:CreateToggle({
+VisionTab:CreateToggle({
     Name = "Killers ESP",
     CurrentValue = false,
     Flag = "KillersESP",
-    Callback = function(Value)
-        toggleKillersESP(Value)
+    Callback = function()
+        toggleKillersESP()
     end
 })
 
-local SurvivorsToggle = VisionTab:CreateToggle({
+VisionTab:CreateToggle({
     Name = "Survivors ESP",
     CurrentValue = false,
     Flag = "SurvivorsESP",
-    Callback = function(Value)
-        toggleSurvivorsESP(Value)
+    Callback = function()
+        toggleSurvivorsESP()
     end
 })
