@@ -165,7 +165,7 @@ local function toggleSurvivorsESP()
     end
 end
 
-VisionTab:CreateToggle({
+VisionTab:CreateToggle1({
     Name = "Generator ESP",
     CurrentValue = false,
     Flag = "GeneratorESP",
@@ -174,7 +174,7 @@ VisionTab:CreateToggle({
     end
 })
 
-VisionTab:CreateToggle({
+VisionTab:CreateToggle2({
     Name = "Killers ESP",
     CurrentValue = false,
     Flag = "KillersESP",
@@ -183,7 +183,7 @@ VisionTab:CreateToggle({
     end
 })
 
-VisionTab:CreateToggle({
+VisionTab:CreateToggle3({
     Name = "Survivors ESP",
     CurrentValue = false,
     Flag = "SurvivorsESP",
