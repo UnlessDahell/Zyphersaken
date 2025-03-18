@@ -47,3 +47,15 @@ local Window = Rayfield:CreateWindow({
 
 local MainTab = Window:CreateTab("Main", 132272873219669)
 local MainSection = MainTab:CreateSection("Main")
+
+local Slider = Tab:CreateSlider({
+    Name = "Camera FOV",
+    Range = {80, 120},
+    Increment = 1, 
+    Suffix = "°",
+    CurrentValue = game.Workspace.CurrentCamera.FieldOfView,
+    Flag = "FOVSlider",
+    Callback = function(Value)
+        game.Workspace.CurrentCamera.FieldOfView = Value
+    end
+})
