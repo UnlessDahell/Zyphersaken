@@ -70,8 +70,8 @@ local Button = MainTab:CreateButton({
    end,
 })
 
-local VisionTab = Window:CreateTab("Vision") or Window:Set("Vision")
-local VisionSection = VisionTab:CreateSection("Vision/ESP/HIGHLIGHT")
+local VisionTab = Window:CreateTab("Vision")
+local VisionSection = VisionTab:CreateSection("This Page About Vision/Highlight")
 
 local function createOutlineESP(model, outlineColor, fillColor)
     if model and model:IsA("Model") and not model:FindFirstChildOfClass("Highlight") then
@@ -108,69 +108,73 @@ local function removeAllESP()
 end
 
 local generatorEnabled = false
-local function toggleGeneratorESP()
-    if generatorEnabled then
-        removeESPFromGroup(workspace)
-        generatorEnabled = false
-    else
-        local generatorsFolder = workspace:FindFirstChild("Map") and 
-                                 workspace.Map:FindFirstChild("Ingame") and 
-                                 workspace.Map.Ingame:FindFirstChild("Map")
-        if generatorsFolder then
-            for _, obj in pairs(generatorsFolder:GetChildren()) do
-                if obj:IsA("Model") and obj.Name == "Generator" then
-                    createOutlineESP(obj, Color3.new(1, 1, 0), Color3.new(1, 1, 0.5))
-                end
-            end
-        end
-        generatorEnabled = true
-    end
-end
-
 local killersEnabled = false
-local function toggleKillersESP()
-    if killersEnabled then
-        removeESPFromGroup(game.Workspace.Players:FindFirstChild("Killers"))
-        killersEnabled = false
-    else
-        local killersGroup = game.Workspace.Players:FindFirstChild("Killers")
-        if killersGroup then
-            for _, obj in pairs(killersGroup:GetChildren()) do
-                local humanoid = obj:FindFirstChildOfClass("Humanoid")
-                if humanoid and obj:FindFirstChild("HumanoidRootPart") then
-                    createOutlineESP(obj, Color3.new(1, 0, 0), Color3.new(1, 0.5, 0.5))
+local survivorsEnabled = false
+
+local function updateGeneratorESP()
+    task.spawn(function()
+        while generatorEnabled do
+            local generatorsFolder = workspace:FindFirstChild("Map") and 
+                                     workspace.Map:FindFirstChild("Ingame") and 
+                                     workspace.Map.Ingame:FindFirstChild("Map")
+            if generatorsFolder then
+                for _, obj in pairs(generatorsFolder:GetChildren()) do
+                    if obj:IsA("Model") and obj.Name == "Generator" then
+                        createOutlineESP(obj, Color3.new(1, 1, 0), Color3.new(1, 1, 0.5))
+                    end
                 end
             end
+            task.wait(0.2)
         end
-        killersEnabled = true
-    end
+        removeESPFromGroup(workspace)
+    end)
 end
 
-local survivorsEnabled = false
-local function toggleSurvivorsESP()
-    if survivorsEnabled then
-        removeESPFromGroup(game.Workspace.Players:FindFirstChild("Survivors"))
-        survivorsEnabled = false
-    else
-        local survivorsGroup = game.Workspace.Players:FindFirstChild("Survivors")
-        if survivorsGroup then
-            for _, obj in pairs(survivorsGroup:GetChildren()) do
-                local humanoid = obj:FindFirstChildOfClass("Humanoid")
-                if humanoid and obj:FindFirstChild("HumanoidRootPart") then
-                    createOutlineESP(obj, Color3.new(0, 1, 0), Color3.new(0.5, 1, 0.5))
+local function updateKillersESP()
+    task.spawn(function()
+        while killersEnabled do
+            local killersGroup = game.Workspace.Players:FindFirstChild("Killers")
+            if killersGroup then
+                for _, obj in pairs(killersGroup:GetChildren()) do
+                    local humanoid = obj:FindFirstChildOfClass("Humanoid")
+                    if humanoid and obj:FindFirstChild("HumanoidRootPart") then
+                        createOutlineESP(obj, Color3.new(1, 0, 0), Color3.new(1, 0.5, 0.5))
+                    end
                 end
             end
+            task.wait(0.2)
         end
-        survivorsEnabled = true
-    end
+        removeESPFromGroup(game.Workspace.Players:FindFirstChild("Killers"))
+    end)
+end
+
+local function updateSurvivorsESP()
+    task.spawn(function()
+        while survivorsEnabled do
+            local survivorsGroup = game.Workspace.Players:FindFirstChild("Survivors")
+            if survivorsGroup then
+                for _, obj in pairs(survivorsGroup:GetChildren()) do
+                    local humanoid = obj:FindFirstChildOfClass("Humanoid")
+                    if humanoid and obj:FindFirstChild("HumanoidRootPart") then
+                        createOutlineESP(obj, Color3.new(0, 1, 0), Color3.new(0.5, 1, 0.5))
+                    end
+                end
+            end
+            task.wait(0.2)
+        end
+        removeESPFromGroup(game.Workspace.Players:FindFirstChild("Survivors"))
+    end)
 end
 
 VisionTab:CreateToggle({
     Name = "Generator ESP",
     CurrentValue = false,
     Flag = "GeneratorESP",
-    Callback = function()
-        toggleGeneratorESP()
+    Callback = function(state)
+        generatorEnabled = state
+        if state then
+            updateGeneratorESP()
+        end
     end
 })
 
@@ -178,8 +182,11 @@ VisionTab:CreateToggle({
     Name = "Killers ESP",
     CurrentValue = false,
     Flag = "KillersESP",
-    Callback = function()
-        toggleKillersESP()
+    Callback = function(state)
+        killersEnabled = state
+        if state then
+            updateKillersESP()
+        end
     end
 })
 
@@ -187,7 +194,10 @@ VisionTab:CreateToggle({
     Name = "Survivors ESP",
     CurrentValue = false,
     Flag = "SurvivorsESP",
-    Callback = function()
-        toggleSurvivorsESP()
+    Callback = function(state)
+        survivorsEnabled = state
+        if state then
+            updateSurvivorsESP()
+        end
     end
 })
