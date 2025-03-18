@@ -12,7 +12,7 @@ if not success then
 end
 
 local Window = Rayfield:CreateWindow({
-   Name = "Zypher Hub (.gg/wDj3ve2K)",
+   Name = "Zypher Hub [ MINUS ] (.gg/wDj3ve2K)",
    Icon = 82284779245358, 
    LoadingTitle = "Wait until GUI setup",
    LoadingSubtitle = "by Sir.Zypher and Skider",
