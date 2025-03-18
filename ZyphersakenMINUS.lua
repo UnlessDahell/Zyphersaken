@@ -71,7 +71,7 @@ local Button = MainTab:CreateButton({
 })
 
 local VisionTab = Window:CreateTab("Vision", nil)
-local Section = Tab:CreateSection("This Page About Vision/ESP")
+local Section = VisionTab:CreateSection("This Page About Vision/ESP")
 
 local function createOutlineESP(model, outlineColor, fillColor)
     if model and model:IsA("Model") and not model:FindFirstChildOfClass("Highlight") then
