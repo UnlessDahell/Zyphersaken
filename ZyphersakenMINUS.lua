@@ -70,8 +70,8 @@ local Button = MainTab:CreateButton({
    end,
 })
 
-local VisionTab = Window:CreateTab("Vision", nil)
-local Section = VisionTab:CreateSection("This Page About Vision/ESP")
+local VisionTab = Window:CreateTab("Vision") or Window:Set("Vision")
+local VisionSection = VisionTab:CreateSection("Vision/ESP/HIGHLIGHT")
 
 local function createOutlineESP(model, outlineColor, fillColor)
     if model and model:IsA("Model") and not model:FindFirstChildOfClass("Highlight") then
@@ -165,7 +165,7 @@ local function toggleSurvivorsESP()
     end
 end
 
-VisionTab:CreateToggle1({
+VisionTab:CreateToggle({
     Name = "Generator ESP",
     CurrentValue = false,
     Flag = "GeneratorESP",
@@ -174,7 +174,7 @@ VisionTab:CreateToggle1({
     end
 })
 
-VisionTab:CreateToggle2({
+VisionTab:CreateToggle({
     Name = "Killers ESP",
     CurrentValue = false,
     Flag = "KillersESP",
@@ -183,7 +183,7 @@ VisionTab:CreateToggle2({
     end
 })
 
-VisionTab:CreateToggle3({
+VisionTab:CreateToggle({
     Name = "Survivors ESP",
     CurrentValue = false,
     Flag = "SurvivorsESP",
