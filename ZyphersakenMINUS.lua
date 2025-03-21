@@ -73,6 +73,8 @@ local Button = MainTab:CreateButton({
 local VisionTab = Window:CreateTab("Vision")
 local VisionSection = VisionTab:CreateSection("This Page About Vision/Highlight")
 
+local VisionTab = Window:CreateTab("Vision")
+
 local function createOutlineESP(model, outlineColor, fillColor)
     if model and model:IsA("Model") and not model:FindFirstChildOfClass("Highlight") then
         local highlight = Instance.new("Highlight")
@@ -88,7 +90,7 @@ end
 local function createOutlineForTool(tool)
     if tool and tool:IsA("Tool") and not tool:FindFirstChildOfClass("Highlight") then
         local highlight = Instance.new("Highlight")
-        highlight.FillColor = Color3.new(nil) 
+        highlight.FillColor = Color3.new(1, 1, 1) 
         highlight.OutlineColor = Color3.new(1, 1, 1) 
         highlight.FillTransparency = 0.75
         highlight.OutlineTransparency = 0
@@ -138,7 +140,7 @@ local function updateGeneratorESP()
             end
             task.wait(0.2)
         end
-        removeESPFromGroup(workspace)
+        removeESPFromGroup(workspace.Map.Ingame.Map)
     end)
 end
 
@@ -188,7 +190,7 @@ local function updateToolsESP()
             end
             task.wait(0.2)
         end
-        removeESPFromGroup(workspace)
+        removeAllESP()
     end)
 end
 
@@ -200,6 +202,8 @@ VisionTab:CreateToggle({
         generatorEnabled = state
         if state then
             updateGeneratorESP()
+        else
+            removeESPFromGroup(workspace.Map.Ingame.Map)
         end
     end
 })
@@ -212,6 +216,8 @@ VisionTab:CreateToggle({
         killersEnabled = state
         if state then
             updateKillersESP()
+        else
+            removeESPFromGroup(game.Workspace.Players:FindFirstChild("Killers"))
         end
     end
 })
@@ -224,6 +230,8 @@ VisionTab:CreateToggle({
         survivorsEnabled = state
         if state then
             updateSurvivorsESP()
+        else
+            removeESPFromGroup(game.Workspace.Players:FindFirstChild("Survivors"))
         end
     end
 })
@@ -236,6 +244,8 @@ VisionTab:CreateToggle({
         toolsEnabled = state
         if state then
             updateToolsESP()
+        else
+            removeAllESP()
         end
     end
 })
