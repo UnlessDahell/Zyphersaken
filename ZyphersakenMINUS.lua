@@ -85,10 +85,21 @@ local function createOutlineESP(model, outlineColor, fillColor)
     end
 end
 
+local function createOutlineForTool(tool)
+    if tool and tool:IsA("Tool") and not tool:FindFirstChildOfClass("Highlight") then
+        local highlight = Instance.new("Highlight")
+        highlight.FillColor = Color3.new(nil) 
+        highlight.OutlineColor = Color3.new(1, 1, 1) 
+        highlight.FillTransparency = 0.75
+        highlight.OutlineTransparency = 0
+        highlight.Parent = tool
+    end
+end
+
 local function removeESPFromGroup(group)
     if group then
         for _, obj in pairs(group:GetChildren()) do
-            if obj:IsA("Model") then
+            if obj:IsA("Model") or obj:IsA("Tool") then
                 for _, highlight in pairs(obj:GetChildren()) do
                     if highlight:IsA("Highlight") then
                         highlight:Destroy()
@@ -110,6 +121,7 @@ end
 local generatorEnabled = false
 local killersEnabled = false
 local survivorsEnabled = false
+local toolsEnabled = false
 
 local function updateGeneratorESP()
     task.spawn(function()
@@ -166,6 +178,20 @@ local function updateSurvivorsESP()
     end)
 end
 
+local function updateToolsESP()
+    task.spawn(function()
+        while toolsEnabled do
+            for _, tool in pairs(workspace:GetDescendants()) do
+                if tool:IsA("Tool") then
+                    createOutlineForTool(tool)
+                end
+            end
+            task.wait(0.2)
+        end
+        removeESPFromGroup(workspace)
+    end)
+end
+
 VisionTab:CreateToggle({
     Name = "Generator ESP",
     CurrentValue = false,
@@ -198,6 +224,18 @@ VisionTab:CreateToggle({
         survivorsEnabled = state
         if state then
             updateSurvivorsESP()
+        end
+    end
+})
+
+VisionTab:CreateToggle({
+    Name = "Tools ESP",
+    CurrentValue = false,
+    Flag = "ToolsESP",
+    Callback = function(state)
+        toolsEnabled = state
+        if state then
+            updateToolsESP()
         end
     end
 })
