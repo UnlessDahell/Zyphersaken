@@ -73,8 +73,6 @@ local Button = MainTab:CreateButton({
 local VisionTab = Window:CreateTab("Vision", 74752218492458)
 local VisionSection = VisionTab:CreateSection("This Page About Vision/Highlight")
 
-local VisionTab = Window:CreateTab("Vision")
-
 local function createOutlineESP(model, outlineColor, fillColor)
     if model and model:IsA("Model") and not model:FindFirstChildOfClass("Highlight") then
         local highlight = Instance.new("Highlight")
