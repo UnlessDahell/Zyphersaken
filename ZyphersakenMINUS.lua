@@ -45,7 +45,7 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local MainTab = Window:CreateTab("Main", 132272873219669)
+local MainTab = Window:CreateTab("Main", 123798026223578)
 local MainSection = MainTab:CreateSection("Main")
 
 local Slider = MainTab:CreateSlider({
@@ -70,7 +70,7 @@ local Button = MainTab:CreateButton({
    end,
 })
 
-local VisionTab = Window:CreateTab("Vision")
+local VisionTab = Window:CreateTab("Vision", 74752218492458)
 local VisionSection = VisionTab:CreateSection("This Page About Vision/Highlight")
 
 local VisionTab = Window:CreateTab("Vision")
