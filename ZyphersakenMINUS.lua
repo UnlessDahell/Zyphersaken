@@ -247,3 +247,67 @@ VisionTab:CreateToggle({
         end
     end
 })
+
+local AimTab = Window:CreateTab("Aim" , nil)
+
+local aimEnabled = false
+
+local function isUsingChance(player)
+    local chanceItem = player:FindFirstChild("Chance") -- ตรวจสอบว่าผู้เล่นมี Chance หรือไม่
+    return chanceItem ~= nil
+end
+
+local function getNearestKiller()
+    local killersGroup = game.Workspace.Players:FindFirstChild("Killers")
+    local nearestKiller = nil
+    local shortestDistance = math.huge
+
+    if killersGroup then
+        for _, killer in pairs(killersGroup:GetChildren()) do
+            if killer:IsA("Model") and killer:FindFirstChild("HumanoidRootPart") then
+                local distance = (killer.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+                if distance < shortestDistance then
+                    shortestDistance = distance
+                    nearestKiller = killer
+                end
+            end
+        end
+    end
+    return nearestKiller
+end
+
+local function aimAtKiller()
+    while aimEnabled do
+        local player = game.Players.LocalPlayer
+        if not isUsingChance(player) then
+            Rayfield:Notify({
+                Title = "Oops!",
+                Content = "Looks like you weren't using chance. Please use chance if you enable this option!",
+                Duration = 7.5
+            })
+            aimEnabled = false
+            return
+        end
+
+        local killer = getNearestKiller()
+        if killer and killer:FindFirstChild("HumanoidRootPart") then
+            local playerCharacter = player.Character
+            if playerCharacter and playerCharacter:FindFirstChild("HumanoidRootPart") then
+                playerCharacter.HumanoidRootPart.CFrame = CFrame.new(playerCharacter.HumanoidRootPart.Position, killer.HumanoidRootPart.Position)
+            end
+        end
+        task.wait(0.1)
+    end
+end
+
+AimTab:CreateToggle({
+    Name = "One Shot Aim Lock",
+    CurrentValue = false,
+    Flag = "AimLock",
+    Callback = function(state)
+        aimEnabled = state
+        if state then
+            aimAtKiller()
+        end
+    end
+})
