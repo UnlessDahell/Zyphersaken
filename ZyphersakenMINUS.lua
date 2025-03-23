@@ -248,13 +248,18 @@ VisionTab:CreateToggle({
     end
 })
 
-local AimTab = Window:CreateTab("Aim" , nil)
+local AimTab = Window:CreateTab("Aim")
 
 local aimEnabled = false
+local UserInputService = game:GetService("UserInputService")
 
-local function isUsingChance(player)
-    local chanceItem = player:FindFirstChild("Chance") -- ตรวจสอบว่าผู้เล่นมี Chance หรือไม่
-    return chanceItem ~= nil
+local function isUsingChance()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    if not character then return false end
+    
+    local parentGroup = character.Parent
+    return character:FindFirstChild("Chance") and parentGroup and parentGroup.Name == "Survivals"
 end
 
 local function getNearestKiller()
@@ -277,37 +282,53 @@ local function getNearestKiller()
 end
 
 local function aimAtKiller()
-    while aimEnabled do
-        local player = game.Players.LocalPlayer
-        if not isUsingChance(player) then
-            Rayfield:Notify({
-                Title = "Oops!",
-                Content = "Looks like you weren't using chance. Please use chance if you enable this option!",
-                Duration = 7.5
-            })
-            aimEnabled = false
-            return
-        end
+    if not isUsingChance() then
+        Rayfield:Notify({
+            Title = "Oops!",
+            Content = "Looks like you weren't using Chance. Please switch to Chance before enabling this option!",
+            Duration = 3
+        })
+        aimEnabled = false
+        return
+    end
 
-        local killer = getNearestKiller()
-        if killer and killer:FindFirstChild("HumanoidRootPart") then
-            local playerCharacter = player.Character
-            if playerCharacter and playerCharacter:FindFirstChild("HumanoidRootPart") then
-                playerCharacter.HumanoidRootPart.CFrame = CFrame.new(playerCharacter.HumanoidRootPart.Position, killer.HumanoidRootPart.Position)
-            end
+    local killer = getNearestKiller()
+    if killer and killer:FindFirstChild("HumanoidRootPart") then
+        local playerCharacter = game.Players.LocalPlayer.Character
+        if playerCharacter and playerCharacter:FindFirstChild("HumanoidRootPart") then
+            playerCharacter.HumanoidRootPart.CFrame = CFrame.new(playerCharacter.HumanoidRootPart.Position, killer.HumanoidRootPart.Position)
         end
-        task.wait(0.1)
     end
 end
 
+local function onShoot()
+    if aimEnabled then
+        aimAtKiller()
+    end
+end
+
+-- รองรับมือถือ (ปุ่ม Shoot บนหน้าจอ)
+local shootButton = Instance.new("TextButton")
+shootButton.Size = UDim2.new(0, 100, 0, 50)
+shootButton.Position = UDim2.new(0.85, 0, 0.8, 0)
+shootButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+shootButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+shootButton.Text = "Shoot"
+shootButton.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+shootButton.MouseButton1Click:Connect(onShoot)
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        onShoot()
+    end
+end)
+
 AimTab:CreateToggle({
-    Name = "One Shot Aim Lock",
+    Name = "Shoot Aim Lock",
     CurrentValue = false,
     Flag = "AimLock",
     Callback = function(state)
         aimEnabled = state
-        if state then
-            aimAtKiller()
-        end
     end
 })
